@@ -1,9 +1,10 @@
 import numpy as np
 import tensorflow as tf
-from keras.models import Model
-from keras.applications.vgg16 import VGG16, preprocess_input
-from keras.preprocessing import image
-import keras.backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input
+from tensorflow.keras.preprocessing import image
+import tensorflow.keras.backend as K
+
 
 
 def load_images(images_list, img_size):
@@ -65,6 +66,13 @@ class PerceptualModel:
 
             image_features = np.vstack([image_features, np.zeros(empty_features_shape)])
 
+        self.sess.run(tf.assign(self.features_weight, weight_mask))
+        self.sess.run(tf.assign(self.ref_img_features, image_features))
+
+    def set_reference_image_batch(self, image_batch):
+        image_features = self.perceptual_model.predict_on_batch(image_batch)
+
+        weight_mask = np.ones(self.features_weight.shape)
         self.sess.run(tf.assign(self.features_weight, weight_mask))
         self.sess.run(tf.assign(self.ref_img_features, image_features))
 
